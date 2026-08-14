@@ -26,6 +26,7 @@ jobs:
         with:
           version: latest
           enable-cache: true
+          cache-suffix: pages
       - run: uv sync --python 3.12 --group docs
       - run: uv run --python 3.12 --group docs mkdocs build --strict
       - uses: actions/upload-pages-artifact@v5

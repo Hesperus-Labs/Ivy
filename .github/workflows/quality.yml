@@ -23,6 +23,7 @@ jobs:
         with:
           version: latest
           enable-cache: true
+          cache-suffix: python-${{ matrix.python-version }}
       - run: uv sync --python ${{ matrix.python-version }} --extra all-cpu
       - run: uv run --python ${{ matrix.python-version }} ruff check ivy/transpiler ivy/stateful/equinox.py ivy/cli.py tests
       - run: uv run --python ${{ matrix.python-version }} pyright
@@ -42,6 +43,7 @@ jobs:
         with:
           version: latest
           enable-cache: true
+          cache-suffix: docs
       - run: uv sync --python 3.12 --group docs
       - run: uv run --python 3.12 --group docs mkdocs build --strict
 
