@@ -1,44 +1,41 @@
 name: 📚 Documentation Bug Report
-description: File a bug for the documentation.
+description: Report an issue in the current Hesperus Ivy documentation.
 title: "[Documentation]: <TITLE>"
-labels: ["Documentation"]
-assignees: ["KareemMAX"]
+labels: [documentation]
+assignees: []
 body:
   - type: input
     id: url
     attributes:
-      label: Path
-      description: "Path to the documentation which have the issue. Can be a documentation URL or path to docstring (file::function-name)."
-      placeholder: https://unify.ai/docs/ivy/, ivy\functional\ivy\activations.py::relu
+      label: Page or repository path
+      description: Link to the Pages page or the source Markdown path.
+      placeholder: https://hesperus-labs.github.io/Ivy/tutorials/internals/
     validations:
       required: true
   - type: input
     id: section
     attributes:
       label: Section
-      description: Section of the documentation which have the issue.
-      placeholder: e.g. Setting up for Free
+      description: Section of the documentation containing the issue.
+      placeholder: e.g. Internal tutorial / primitive registry
     validations:
       required: true
   - type: textarea
     id: actual-behavior
     attributes:
-      label: Actual Behavior
-      description: What is the actual behavior of the documentation?
-      placeholder: e.g. The documentation is not clear.
+      label: Actual behavior
+      description: What is incorrect, missing, or unclear?
     validations:
       required: true
   - type: textarea
     id: expected-behavior
     attributes:
-      label: Expected Behavior
-      description: What is the expected behavior of the documentation?
-      placeholder: e.g. The documentation should be clear.
+      label: Expected behavior
+      description: What should the page say or demonstrate?
     validations:
       required: true
   - type: textarea
     id: screenshots
     attributes:
-      label: Screenshots
-      description: If applicable, add screenshots to help explain your problem.
-      placeholder: Drag and drop screenshots here.
+      label: Screenshots or logs
+      description: Add screenshots, build output, or a broken-link URL if useful.

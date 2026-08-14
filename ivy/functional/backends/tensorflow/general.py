@@ -185,11 +185,15 @@ def gather_nd(
 
 
 def get_num_dims(x, /, *, as_array=False):
-    return (
-        tf.cast(tf.shape(tf.shape(x))[0], tf.int64)
-        if as_array
-        else int(tf.shape(tf.shape(x)))
-    )
+    """Return the rank of a TensorFlow value.
+
+    ``tf.shape(tf.shape(x))`` used to be a convenient eager-mode shortcut,
+    but it returns a one-element tensor on current TensorFlow releases and
+    therefore cannot be converted to ``int``.  ``tf.rank`` is the public API
+    for this operation and also behaves correctly inside ``tf.function``.
+    """
+    rank = tf.rank(x)
+    return tf.cast(rank, tf.int64) if as_array else int(rank.numpy())
 
 
 def inplace_arrays_supported():

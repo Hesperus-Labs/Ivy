@@ -42,7 +42,7 @@ def random_uniform(
     shape = _check_bounds_and_get_shape(low, high, shape).shape
     low = tf.cast(low, dtype)
     high = tf.cast(high, dtype)
-    if seed:
+    if seed is not None:
         tf.random.set_seed(seed)
     return tf.random.uniform(shape, low, high, dtype=dtype, seed=seed)
 
@@ -61,7 +61,7 @@ def random_normal(
     shape = _check_bounds_and_get_shape(mean, std, shape).shape
     mean = tf.cast(mean, dtype)
     std = tf.cast(std, dtype)
-    if seed:
+    if seed is not None:
         tf.random.set_seed(seed)
     return tf.random.normal(shape, mean, std, dtype=dtype, seed=seed)
 
@@ -93,7 +93,7 @@ def multinomial(
     # We set the global seed, but not the operation seeds below. In this way, we
     # get different results for every random op call but the same sequence for
     # every re-run of the program
-    if seed:
+    if seed is not None:
         tf.random.set_seed(seed)
 
     if not replace:
@@ -140,7 +140,7 @@ def randint(
     shape = _check_bounds_and_get_shape(low, high, shape).shape
     low = tf.cast(low, "float32")
     high = tf.cast(high, "float32")
-    if seed:
+    if seed is not None:
         tf.random.set_seed(seed)
     return tf.cast(tf.random.uniform(shape, low, high, "float32", seed=seed), dtype)
 
@@ -158,6 +158,6 @@ def shuffle(
     seed: Optional[int] = None,
     out: Optional[Union[tf.Tensor, tf.Variable]] = None,
 ) -> Union[tf.Tensor, tf.Variable]:
-    if seed:
+    if seed is not None:
         tf.random.set_seed(seed)
     return tf.random.shuffle(x, seed=seed)

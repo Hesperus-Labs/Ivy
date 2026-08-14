@@ -30,7 +30,7 @@ def random_uniform(
 ) -> torch.Tensor:
     shape = _check_bounds_and_get_shape(low, high, shape).shape
     rand_range = high - low
-    if seed:
+    if seed is not None:
         torch.manual_seed(seed)
     if torch.is_tensor(shape):
         shape = shape.tolist()
@@ -52,7 +52,7 @@ def random_normal(
     _check_valid_scale(std)
     shape = _check_bounds_and_get_shape(mean, std, shape).shape
     dtype = ivy.as_native_dtype(dtype)
-    if seed:
+    if seed is not None:
         torch.manual_seed(seed)
     if isinstance(mean, (int, float)) and isinstance(std, (int, float)):
         return torch.normal(mean, std, shape, out=out).type(dtype).to(device)
@@ -85,7 +85,7 @@ def multinomial(
             )
             / population_size
         )
-    if seed:
+    if seed is not None:
         torch.manual_seed(seed)
     return torch.multinomial(probs.float(), num_samples, replace, out=out).to(device)
 
@@ -110,7 +110,7 @@ def randint(
     _randint_check_dtype_and_bound(low, high, dtype)
     shape = _check_bounds_and_get_shape(low, high, shape).shape
     rand_range = high - low
-    if seed:
+    if seed is not None:
         torch.manual_seed(seed)
     return (torch.rand(shape, device=device) * rand_range + low).to(dtype)
 
@@ -137,7 +137,7 @@ def shuffle(
     if len(x.shape) == 0:
         return x
     batch_size = x.shape[0]
-    if seed:
+    if seed is not None:
         torch.manual_seed(seed)
     return torch.index_select(x, 0, torch.randperm(batch_size), out=out)
 

@@ -1,0 +1,92 @@
+site_name: Hesperus Ivy
+site_description: Equinox-first portable ML primitives and transpilation
+site_url: https://hesperus-labs.github.io/Ivy/
+repo_name: Hesperus-Labs/Ivy
+repo_url: https://github.com/Hesperus-Labs/Ivy
+edit_uri: edit/main/docs-site/docs/
+docs_dir: docs-site/docs
+strict: true
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - content.action.edit
+    - search.suggest
+    - search.highlight
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/weather-sunny
+        name: Use dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-night
+        name: Use light mode
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [ivy]
+          options:
+            docstring_style: numpy
+            members_order: source
+            show_source: false
+            show_root_heading: true
+            heading_level: 2
+            merge_init_into_class: true
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist
+  - tables
+
+extra:
+  version:
+    provider: mike
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Hesperus-Labs/Ivy
+
+nav:
+  - Home: index.md
+  - Project status: status.md
+  - Getting started:
+      - Install: install.md
+      - Five-minute quickstart: tutorials/quickstart.md
+      - Framework matrix: compatibility.md
+  - Tutorials:
+      - Transpile a function: tutorials/transpiling.md
+      - Equinox modules and state: tutorials/equinox.md
+      - Examples: tutorials/examples.md
+      - Internal tutorial: tutorials/internals.md
+  - Internals:
+      - Pipeline tour: internals/pipeline.md
+      - Primitive registry: internals/registry.md
+      - Add a lowering: internals/extending.md
+  - Migration:
+      - From upstream Ivy: migration/upstream.md
+      - From Flax/Haiku to Equinox: migration/equinox.md
+  - API reference:
+      - Core library: reference/library.md
+      - Transpiler: reference/transpiler.md
+      - Equinox bridges: reference/equinox.md
+      - Diagnostics: reference/diagnostics.md
+  - Contributors:
+      - Documentation workflow: contributing/docs.md

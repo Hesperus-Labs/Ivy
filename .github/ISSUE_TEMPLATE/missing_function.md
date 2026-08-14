@@ -1,21 +1,25 @@
 ---
-name: 🔍 Missing Function Suggestion
-about: Request the implementation of a function in the Ivy functional API.
-title: "ivy.<FUNC_NAME>"
-labels: Ivy API, Ivy API Experimental, Next Release, Suggestion
+name: 🔍 Missing primitive or lowering
+about: Request a documented primitive or source-to-target lowering.
+title: "primitive: <FUNC_NAME>"
+labels: enhancement
 assignees: ''
 
 ---
 
-<!-- Information below is optional. -->
+**Why should this be part of the stable Hesperus contract?**
 
-**Why should this be implemented?**
-- 3+ of the native frameworks have this function
-- it's an NN-related function and should be as efficient as possible
-- it's needed for a complex/long frontend function implementation
+- It is needed by a real PyTorch, TensorFlow, JAX/Equinox, or NumPy workload.
+- The operation has a clear cross-framework semantic contract.
+- It can be covered by a focused differential test.
 
-**Links to native framework implementations**
-- [Jax](<FUNC_URL_DOCS>)
-- [PyTorch](<FUNC_URL_DOCS>)
-- [TensorFlow](<FUNC_URL_DOCS>)
-- [NumPy](<FUNC_URL_DOCS>)
+**Links to official framework documentation**
+
+- JAX / Equinox:
+- PyTorch:
+- TensorFlow:
+- NumPy:
+
+**Expected source and target pairs**
+
+<!-- e.g. PyTorch -> JAX/Equinox and PyTorch -> NumPy. -->

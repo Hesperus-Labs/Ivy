@@ -4,7 +4,6 @@
 import os
 import jax
 from typing import Union, Optional
-import jaxlib.xla_extension
 
 # local
 import ivy
@@ -20,12 +19,16 @@ from ivy.functional.ivy.device import (
 
 
 def _to_array(x):
-    if isinstance(x, jax.interpreters.ad.JVPTracer):
-        return _to_array(x.primal)
-    elif isinstance(x, jax.interpreters.partial_eval.DynamicJaxprTracer):
-        return _to_array(x.aval)
-    elif isinstance(x, jax.interpreters.batching.BatchTracer):
-        return _to_array(x.val)
+    # Tracers are part of JAX's public core protocol even though individual
+    # transformation classes move between releases.  Follow their public
+    # ``primal``/``val``/``aval`` attributes instead of importing private
+    # interpreter classes.
+    tracer = getattr(jax.core, "Tracer", ())
+    if tracer and isinstance(x, tracer):
+        for attribute in ("primal", "val", "aval"):
+            value = getattr(x, attribute, None)
+            if value is not None:
+                return _to_array(value)
     return x
 
 
@@ -38,13 +41,18 @@ def dev(
     /,
     *,
     as_native: bool = False,
-) -> Union[ivy.Device, jaxlib.xla_extension.Device]:
+) -> Union[ivy.Device, jax.Device]:
     if isinstance(x, jax.interpreters.partial_eval.DynamicJaxprTracer):
         return ""
     try:
-        dv = _to_array(x).device_buffer.device
-        dv = dv()
+        value = _to_array(x)
+        if hasattr(value, "device"):
+            dv = value.device
+        else:  # Scalars and abstract values have no placement metadata.
+            dv = None
     except Exception:
+        dv = jax.devices()[0]
+    if dv is None:
         dv = jax.devices()[0]
     if as_native:
         return dv
@@ -53,16 +61,17 @@ def dev(
 
 def to_device(
     x: JaxArray,
-    device: jaxlib.xla_extension.Device,
+    device: jax.Device,
     /,
     *,
     stream: Optional[int] = None,
     out: Optional[JaxArray] = None,
 ):
     if device is not None:
-        cur_dev = as_native_dev(dev(x))
-        if cur_dev != device:
-            x = jax.device_put(x, as_native_dev(device))
+        target_device = as_native_dev(device)
+        cur_dev = dev(x, as_native=True)
+        if cur_dev != target_device:
+            x = jax.device_put(x, target_device)
     return x
 
 
@@ -70,9 +79,10 @@ def to_device(
 # since if we use to_device, it will return ivy.array which is not desirable
 def _to_device(x, device=None):
     if device is not None:
-        cur_dev = as_native_dev(dev(x))
-        if cur_dev != device:
-            x = jax.device_put(x, as_native_dev(device))
+        target_device = as_native_dev(device)
+        cur_dev = dev(x, as_native=True)
+        if cur_dev != target_device:
+            x = jax.device_put(x, target_device)
     return x
 
 
