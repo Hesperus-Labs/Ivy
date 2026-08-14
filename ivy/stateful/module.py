@@ -727,9 +727,8 @@ class Module(ModuleHelpers, ModuleConverters, ModuleMeta):
         else:
             dtype = ivy.default_dtype(dtype=self._dtype, as_native=True)
 
-        # why are we adding this kwarg in user-defined build ?
-        # it results in the error while doing `from_haiku_module` if haiku's forward
-        # therefore leaving it commented out
+        # Keep dtype internal to the module build.  Native framework adapters
+        # use the explicit Equinox bridge instead of mutating this call.
         # kwargs["dtype"] = dtype
 
         # build local Module, and any child modules flagged with "explicit" build mode
@@ -1040,109 +1039,6 @@ class Module(ModuleHelpers, ModuleConverters, ModuleMeta):
         if ivy.current_backend_str() == "paddle":
             loaded._convert_numpy_to_tensors()
         return loaded
-
-
-class _HaikuIvyModule(Module):
-    def __init__(self, *args, params_hk, native_module, device, devices, **kwargs):
-        self._native_module = native_module
-        self._args = args
-        self._kwargs = kwargs
-        ivy.Module.__init__(
-            self,
-            params_hk,
-            *args,
-            build_mode="on_init",
-            device=device,
-            devices=devices,
-            **kwargs,
-        )
-
-    def _create_variables(self, device, dtype):
-        return self._hk_params
-
-    def _build(self, params_hk, *args, **kwargs):
-        pass
-
-        args, kwargs = ivy.args_to_native(*args, **kwargs)
-        # noinspection PyUnresolvedReferences
-        params_dict = self._hk_flat_map_to_dict(params_hk)
-        self._hk_params = ivy.Container(params_dict, dynamic_backend=False)
-        param_iterator = self._hk_params.cont_to_iterator()
-        _, param0 = next(param_iterator, ["_", 0])
-        if hasattr(param0, "device"):
-            self._device = ivy.as_ivy_dev(param0.device())
-        else:
-            self._device = ivy.as_ivy_dev("cpu")
-
-    def _forward(self, *a, **kw):
-        a, kw = ivy.args_to_native(*a, **kw)
-        params_hk = self._dict_to_hk_flat_map(self.v.cont_to_dict())
-        ret = self._native_module.apply(params_hk, 0, *a, **kw)
-        nested = True if isinstance(ret, tuple) else False
-        return ivy.to_native(ret, nested=nested)
-
-    def _hk_flat_map_to_dict(self, hk_flat_map):
-        from haiku._src.data_structures import FlatMapping
-
-        ret_dict = {}
-        for k, v in hk_flat_map.items():
-            new_k = k.replace("/", "|")
-            if isinstance(v, FlatMapping):
-                ret_dict[new_k] = self._hk_flat_map_to_dict(v)
-            else:
-                ret_dict[new_k] = v
-        return ret_dict
-
-    def _dict_to_hk_flat_map(self, dict_in):
-        from haiku._src.data_structures import FlatMapping
-
-        ret_flat_map = {}
-        for k, v in dict_in.items():
-            new_k = k.replace("|", "/")
-            if isinstance(v, dict):
-                ret_flat_map[new_k] = self._dict_to_hk_flat_map(v)
-            else:
-                ret_flat_map[new_k] = v
-        return FlatMapping(ret_flat_map)
-
-
-class _FlaxIvyModule(Module):
-    def __init__(self, *args, params_fx, native_module, device, devices, **kwargs):
-        self._native_module = native_module
-        self._args = args
-        self._kwargs = kwargs
-        ivy.Module.__init__(
-            self,
-            params_fx,
-            *args,
-            build_mode="on_init",
-            device=device,
-            devices=devices,
-            **kwargs,
-        )
-
-    def _create_variables(self, device, dtype):
-        return self._fx_params
-
-    def _build(self, params_fx, *args, **kwargs):
-        import flax
-
-        args, kwargs = ivy.args_to_native(*args, **kwargs)
-        # noinspection PyUnresolvedReferences
-        params_dict = flax.core.unfreeze(params_fx)
-        self._fx_params = ivy.Container(params_dict, dynamic_backend=False)
-        param_iterator = self._fx_params.cont_to_iterator()
-        _, param0 = next(param_iterator, ["_", 0])
-        self._device = ivy.as_ivy_dev(ivy.dev(param0))
-
-    def _forward(self, *a, **kw):
-        import flax
-
-        a, kw = ivy.args_to_native(*a, **kw)
-        params_fx = flax.core.freeze(self.v.cont_to_dict())
-        ret = self._native_module.apply(params_fx, *a, **kw)
-        nested = True if isinstance(ret, tuple) else False
-        return ivy.to_native(ret, nested=nested)
 
 
 class _KerasIvyModule(Module):

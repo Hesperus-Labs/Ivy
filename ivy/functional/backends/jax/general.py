@@ -9,7 +9,6 @@ from operator import mul
 from functools import reduce as _reduce
 from typing import Optional, Union, Sequence, Callable, Tuple
 import multiprocessing as _multiprocessing
-import importlib
 
 
 # local
@@ -23,14 +22,14 @@ from . import backend_version
 
 
 def container_types():
-    flat_mapping_spec = importlib.util.find_spec(
-        "FlatMapping", "haiku._src.data_structures"
-    )
-    if not flat_mapping_spec:
-        from haiku._src.data_structures import FlatMapping
-    else:
-        FlatMapping = importlib.util.module_from_spec(flat_mapping_spec)
-    return [FlatMapping]
+    """Return public mapping types used by JAX/Equinox PyTrees.
+
+    The historical backend imported Haiku's private ``FlatMapping`` class.
+    Equinox and modern JAX use ordinary PyTree-compatible mappings instead, so
+    no optional Haiku dependency is required.
+    """
+
+    return [dict]
 
 
 def current_backend_str() -> str:
@@ -40,13 +39,14 @@ def current_backend_str() -> str:
 def is_native_array(x, /, *, exclusive=False):
     if exclusive:
         return isinstance(x, NativeArray)
+    tracer = getattr(jax.core, "Tracer", ())
+    shaped_array = getattr(jax.core, "ShapedArray", ())
     return isinstance(
         x,
         (
             NativeArray,
-            jax.interpreters.ad.JVPTracer,
-            jax.core.ShapedArray,
-            jax.interpreters.partial_eval.DynamicJaxprTracer,
+            tracer,
+            shaped_array,
         ),
     )
 

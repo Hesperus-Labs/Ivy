@@ -1,9 +1,6 @@
-sudo apt-get update
-sudo apt-get install pandoc -y
-pip install -r requirements/requirements.txt
-if [[ $(arch) == 'arm64' ]]; then
-      pip install -r requirements/optional_apple_silicon_1.txt
-      pip install -r requirements/optional_apple_silicon_2.txt
-else
-    pip install -r requirements/optional.txt
-fi
+#!/usr/bin/env bash
+set -euo pipefail
+
+# The old requirements/*.txt bootstrap was tied to the upstream Ivy matrix.
+# uv now resolves the maintained Python 3.12/3.13 environment from the lock.
+uv sync --python "${IVY_PYTHON:-3.13}" --extra "${IVY_EXTRA:-all-cpu}"

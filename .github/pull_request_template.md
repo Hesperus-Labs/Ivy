@@ -1,44 +1,30 @@
+# Hesperus Ivy pull request
+
+## Summary
+
+<!-- What changed, and why is it part of the current Hesperus Ivy contract? -->
+
+## Related issue
+
+<!-- Use `Closes #123` when this PR resolves an issue. -->
+
+## Validation
+
+- [ ] I added or updated focused tests under `tests/`.
+- [ ] I updated the relevant page under `docs-site/docs/` for public behavior.
+- [ ] I ran `uv run pytest tests`.
+- [ ] I ran `uv run ruff check ivy/transpiler tests` (as applicable).
+- [ ] I ran `uv run --group docs mkdocs build --strict` for documentation changes.
+- [ ] I ran `uv run pre-commit run --all-files` or explained why it was not run.
+
+## Compatibility and migration
+
+<!-- Note any source/target framework, Equinox state, RNG-key, or API alias impact. -->
+
+## Documentation and artifacts
 
 <!--
-This template will help you to have a meaningful PR, please follow it and do not leave it blank.
--->
-
-# PR Description
-
-<!--
-If there is no related issue, please add a short description about your PR.
--->
-
-## Related Issue
-
-<!--
-Please use this format to link other issues with their numbers: Close #123
-https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword
--->
-
-Closes #
-
-## Checklist
-
-- [ ] Did you add a function?
-- [ ] Did you add the tests?
-- [ ] Did you run your tests and are your tests passing?
-- [ ] Did pre-commit not fail on any check?
-- [ ] Did you follow the steps we provided?
-
-<!--
-Please mark your PR as a draft if you realise after the fact that your tests are not passing or
-that your pre-commit check has some failures.
-
-Here are some relevant resources regarding tests and pre-commit:
-
-https://unify.ai/docs/ivy/overview/deep_dive/ivy_tests.html
-https://unify.ai/docs/ivy/overview/deep_dive/formatting.html#pre-commit
-
--->
-
-### Socials
-
-<!--
-If you have Twitter, please provide it here otherwise just ignore this.
+Current documentation: https://hesperus-labs.github.io/Ivy/
+Contributor workflow: https://hesperus-labs.github.io/Ivy/contributing/docs/
+Internal tutorial: https://hesperus-labs.github.io/Ivy/tutorials/internals/
 -->

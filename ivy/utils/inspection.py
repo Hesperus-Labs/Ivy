@@ -1,5 +1,6 @@
 # global
-from typing import get_type_hints
+from types import UnionType
+from typing import Union, get_args, get_origin, get_type_hints
 
 
 # local
@@ -7,49 +8,21 @@ import ivy
 
 
 def _is_optional(typ):
-    # noinspection PyBroadException
-    try:
-        rep = typ.__repr__().split(".")[1]
-        if rep.startswith("Optional") or (
-            rep.startswith("Union") and type(None) in typ.__args__
-        ):
-            return True
-    except BaseException as error:
-        print(f"Exception occurred: {error}")
-    return False
+    return _is_union(typ) and type(None) in get_args(typ)
 
 
 def _is_union(typ):
-    # noinspection PyBroadException
-    try:
-        rep = typ.__repr__().split(".")[1]
-        if rep.startswith("Union"):
-            return True
-    except BaseException as error:
-        print(f"Exception occurred: {error}")
-    return False
+    return get_origin(typ) in {Union, UnionType}
 
 
 def _is_dict(typ):
-    # noinspection PyBroadException
-    try:
-        rep = typ.__repr__().split(".")[1]
-        if rep.startswith("Dict"):
-            return True
-    except BaseException as error:
-        print(f"Exception occurred: {error}")
-    return False
+    origin = get_origin(typ)
+    return origin is dict
 
 
 def _is_iterable(typ):
-    # noinspection PyBroadException
-    try:
-        rep = typ.__repr__().split(".")[1]
-        if rep.startswith("List") or rep.startswith("Tuple"):
-            return True
-    except BaseException as error:
-        print(f"Exception occurred: {error}")
-    return False
+    origin = get_origin(typ)
+    return origin in {list, tuple}
 
 
 def _correct_index(is_opt, is_dict, is_iter):

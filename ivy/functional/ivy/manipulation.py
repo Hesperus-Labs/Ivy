@@ -2,7 +2,7 @@
 # global
 from typing import Union, Optional, Tuple, List, Iterable, Sequence
 from numbers import Number
-from numpy.core.numeric import normalize_axis_tuple
+from numpy.lib.array_utils import normalize_axis_tuple
 
 # local
 import ivy

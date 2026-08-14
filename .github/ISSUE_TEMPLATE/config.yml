@@ -1,4 +1,7 @@
 contact_links:
-  - name: 🤷🏻‍♀️ Questions
-    url: https://discord.gg/2zR6KhCBCJ
-    about: Interact with the Ivy community here by asking for help, discussing and more!
+  - name: 📖 Documentation and internal tutorial
+    url: https://hesperus-labs.github.io/Ivy/
+    about: Start with the current Hesperus Ivy Pages site and internal implementation tutorial.
+  - name: 🧭 Compatibility and migration guide
+    url: https://hesperus-labs.github.io/Ivy/migration/upstream/
+    about: Check the current API, Equinox state, and migration contract before opening an issue.

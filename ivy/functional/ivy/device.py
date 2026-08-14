@@ -7,7 +7,6 @@ import gc
 import abc
 import math
 import psutil
-import warnings
 import types
 from typing import Type, Optional, Tuple
 
@@ -20,12 +19,9 @@ try:
     except pynvml.NVMLError:
         pass
 except ImportError:
-    warnings.warn(
-        "pynvml installation was not found in the environment, functionalities"
-        " of the Ivy's device module will be limited. Please install pynvml if"
-        " you wish to use GPUs with Ivy."
-    )
-    # nvidia-ml-py (pynvml) is not installed in CPU Dockerfile.
+    # nvidia-ml-py is optional.  Keep CPU imports quiet; GPU query functions
+    # below raise an actionable Ivy exception when NVML is actually needed.
+    pynvml = None
 
 from typing import Union, Callable, Iterable, Any
 
@@ -146,6 +142,11 @@ def handle_soft_device_variable(*args, fn, **kwargs):
 
 def _get_nvml_gpu_handle(device: Union[ivy.Device, ivy.NativeDevice], /) -> int:
     global dev_handles
+    if pynvml is None:
+        raise ivy.utils.exceptions.IvyException(
+            "NVML is unavailable. Install the `nvidia` extra (which provides "
+            "nvidia-ml-py) before querying GPU memory or utilization."
+        )
     if device in dev_handles:
         return dev_handles[device]
     gpu_idx = int(device.split(":")[-1])

@@ -236,6 +236,29 @@ def _handle_backend_specific_vars(target, backend):
         target.set_global_attr("RNG", target.functional.backends.jax.random.RNG)
 
 
+def _is_immutable_array(value):
+    """Return whether ``value`` is a NumPy/JAX array rather than a variable.
+
+    This helper intentionally uses public JAX typing when JAX is installed.
+    The old implementation compared against removed module paths such as
+    ``jaxlib.xla_extension``; those paths disappeared in JAX 0.11 and made
+    backend switching fail before user code ran.
+    """
+    if isinstance(value, np.ndarray):
+        return True
+    try:
+        jax = importlib.import_module("jax")
+        jax_array = getattr(jax, "Array", ())
+        if jax_array and isinstance(value, jax_array):
+            return True
+    except (ImportError, AttributeError):
+        pass
+    # Keep compatibility with older JAX releases without importing private
+    # implementation modules.  This is only a fallback for legacy arrays.
+    module = type(value).__module__
+    return module.startswith("jax") or module.startswith("jaxlib")
+
+
 def convert_from_source_backend_to_numpy(variable_ids, numpy_objs, devices):
     # Dynamic Backend
     from ivy.functional.ivy.gradients import _is_variable, _variable_data
@@ -245,11 +268,7 @@ def convert_from_source_backend_to_numpy(variable_ids, numpy_objs, devices):
 
             def _map_fn(x):
                 x = x.data if isinstance(x, ivy.Array) else x
-                if x.__class__.__module__ in (
-                    "numpy",
-                    "jax.interpreters.xla",
-                    "jaxlib.xla_extension",
-                ):
+                if _is_immutable_array(x):
                     return False
 
                 return _is_variable(x)
@@ -258,11 +277,7 @@ def convert_from_source_backend_to_numpy(variable_ids, numpy_objs, devices):
 
         else:
             obj = obj.data if isinstance(obj, ivy.Array) else obj
-            if obj.__class__.__module__ in (
-                "numpy",
-                "jax.interpreters.xla",
-                "jaxlib.xla_extension",
-            ):
+            if _is_immutable_array(obj):
                 return False
             return _is_variable(obj)
 
@@ -371,7 +386,7 @@ def set_backend(backend: str, dynamic: bool = False):
     >>> ivy.set_backend("jax")
     >>> native = ivy.native_array([1])
     >>> print(type(native))
-    <class 'jaxlib.xla_extension.ArrayImpl'>
+    <class 'jaxlib._jax.ArrayImpl'>
     """  # noqa
     ivy.utils.assertions.check_false(
         isinstance(backend, str) and backend not in _backend_dict,

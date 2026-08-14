@@ -176,7 +176,6 @@ def _create_node(stmnt: str):
 
 class ImportTransformer(ast.NodeTransformer):
     def __init__(self):
-        self.insert_index = 0  # TODO hacky solution for __future__
         self.include_ivy_import = False
 
     def visit_Import(self, node):
@@ -188,8 +187,6 @@ class ImportTransformer(ast.NodeTransformer):
     def visit_ImportFrom(self, node):
         self.include_ivy_import = True
         if node.level == 0:
-            if node.module is not None and node.module == "__future__":
-                self.insert_index = 1
             return _parse_absolute_fromimport(node)
         else:
             return _parse_relative_fromimport(node)
@@ -199,8 +196,26 @@ class ImportTransformer(ast.NodeTransformer):
             return tree
 
         # Convenient function to insert the parse the AST import statement and insert it
+        # Imports injected by the backend loader must come after the optional
+        # module docstring and every ``from __future__`` statement.  The old
+        # fixed index of ``1`` only worked for files without docstrings and
+        # produced a SyntaxError for modern modules that combine both.
+        insert_index = 0
+        if tree.body and isinstance(tree.body[0], ast.Expr):
+            value = tree.body[0].value
+            if isinstance(value, ast.Constant) and isinstance(value.value, str):
+                insert_index = 1
+        while (
+            insert_index < len(tree.body)
+            and isinstance(tree.body[insert_index], ast.ImportFrom)
+            and tree.body[insert_index].module == "__future__"
+        ):
+            insert_index += 1
+
         def insert_import(node):
-            return tree.body.insert(self.insert_index, _create_node(node))
+            nonlocal insert_index
+            tree.body.insert(insert_index, _create_node(node))
+            insert_index += 1
 
         if local_ivy_id is None:
             insert_import(

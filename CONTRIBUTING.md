@@ -1,51 +1,37 @@
-# How to Contribute
+# Contributing to Hesperus Ivy
 
-You can pick an open issue to contribute from our [ToDo list issues](https://github.com/unifyai/ivy/issues?q=is%3Aopen+is%3Aissue+label%3AToDo), which is the placeholder of our subtasks.
+The contributor documentation is published at
+[hesperus-labs.github.io/Ivy](https://hesperus-labs.github.io/Ivy/), including
+the [documentation workflow](https://hesperus-labs.github.io/Ivy/contributing/docs/)
+and the [internal pipeline tour](https://hesperus-labs.github.io/Ivy/internals/pipeline/).
 
-Please, follow the next process when you work on your subtask:
+## Development setup
 
-## Steps
+```bash
+git clone https://github.com/Hesperus-Labs/Ivy.git
+cd Ivy
+uv sync --python 3.13
+uv run --python 3.13 pytest tests
+uv run --python 3.13 ruff check ivy/transpiler ivy/stateful/equinox.py ivy/cli.py tests
+uv run --python 3.13 pyright
+uv run --python 3.13 --group docs mkdocs build --strict
+uv run --python 3.13 pre-commit run --all-files
+```
 
-1. **Choosing a Task:**
+Use `uv sync --extra all-cpu` for the complete CPU framework matrix. The
+personalized NVIDIA environment is `uv sync --extra nvidia`; it resolves
+PyTorch from the CUDA 13 index and JAX with its CUDA 13 plugin.
 
-   - Choose a task to work on which:
-     - is not marked as completed with a tick
-     - does not have an issue created
-     - is not mentioned in the comments.
+## Adding a primitive
 
-   Currently, there are three open tasks:
+Add the operation to `ivy/transpiler/registry.py`, implement its target-native
+behavior in `ivy/transpiler/runtime.py`, add differential tests, and document
+the semantics. A primitive is not complete until the strict Pages build and the
+framework tests pass.
 
-   - [Function Reformatting](https://unify.ai/docs/ivy/overview/contributing/open_tasks.html#function-formatting)
-   - [Frontend APIs](https://unify.ai/docs/ivy/overview/contributing/open_tasks.html#frontend-apis)
-   - [Ivy Experimental API](https://unify.ai/docs/ivy/overview/contributing/open_tasks.html#ivy-experimental-api)
+## Pull requests
 
-2. **Create Issue:**
-
-   - Create a new issue with the title being just the name of the sub-task you would like to work on.
-
-3. **Comment on the ToDo List:**
-
-   - Comment on the ToDo list issue with a reference to your new issue like so: `- [ ] #Issue_number`. For example, if your issue number is 12345, then the text of your comment should be `- [ ] #12345`. You could also use just the issue number (`#12345`), or a link to the issue itself (`https://github.com/unifyai/ivy/issues/12345`).
-   - At some point after your comment is made, your issue will automatically be added to the ToDo list and the comment will be deleted. No need to wait for this to happen before progressing to the next stage. Don’t comment anything else on these ToDo issues.
-
-4. **Start Working:**
-
-   - When you have finished PR or need help open the PR make sure to follow our PR template.
-
-5. **Review Process:**
-   - Wait for us to review your PR. Please be patient, our engineers will look into your PR based on the queue we have, no need to ping them.
-   - Every time you respond to our requested changes you must re-request a review in order for us to re-engage with the PR.
-   - Once the PR is in good shape, we will merge into main, and then you become an Ivy contributor!
-
-### Important Notes
-
-- if your PR is not created within 7 days of creating the issue, then a warning message will appear on the issue, we do this in order to keep our ToDo lists moving quickly,
-- Please don't take it personally if your issue or PR gets closed because of this 7-day inactivity time limit.
-
-- Finally, we limit the maximum number of open and incomplete sub-task issues to three per person.
-
- Feel free to watch the next video:
-
-[![Video](https://img.youtube.com/vi/wBKTOGmwfbo/0.jpg)](https://www.youtube.com/embed/wBKTOGmwfbo)
-
-For questions, please reach out on [discord](https://discord.gg/sd2yYCha) in the [todo list issues channel](https://discord.com/channels/799879767196958751/982728618469912627)!
+Keep changes focused, include a regression test, and include a documentation
+update for every public behavior change. Do not add install-time downloads,
+private framework APIs, process-global state, or binary compiler artifacts.
+Preserve upstream Ivy Apache-2.0 attribution in derived code.

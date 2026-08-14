@@ -1,28 +1,13 @@
-# Ivy Framework
-ivy/func_wrapper.py @VedPatwardhan
-**/gradients.py @VedPatwardhan
-ivy/utils/backend @VedPatwardhan @CatB1t
-ivy/utils/backend/ast_helpers.py @CatB1t
+# Hesperus Ivy ownership. Replace with an organization team when the
+# maintainer team is formalized.
+* @Impure-King
 
-# Ivy Testing
-ivy_tests/test_ivy/helpers/ @sherry30 @CatB1t
-ivy_tests/array_api_testing/ @aarsh2001 @hirwa-nshuti
+# Current implementation surfaces.
+/ivy/transpiler/ @Impure-King
+/ivy/stateful/equinox.py @Impure-King
+/tests/ @Impure-King
 
-# Docs builder
-docs/index.rst @KareemMAX
-docs/make_docs.sh @KareemMAX
-docs/partial_conf.py @KareemMAX
-docs/prebuild.sh @KareemMAX
-docs/overview/contributing/building_the_docs.rst @KareemMAX
-docs/overview/deep_dive/building_the_docs_pipeline.rst @KareemMAX
-docs/_templates @KareemMAX
-docs/demos @KareemMAX
-
-# Docker
-docker/* @ricksanchezstoic
-
-# Idea files
-.idea/* @Aarsh2001 @zaeemansari70
-
-# README
-README.md @guillesanbri
+# Published documentation and its deployment workflow.
+/docs-site/ @Impure-King
+/mkdocs.yml @Impure-King
+/.github/workflows/docs-pages.yml @Impure-King

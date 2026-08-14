@@ -1,14 +1,16 @@
 # global
 import os
-import redis
 from colorama import Fore
 from hypothesis import settings, HealthCheck, Phase
 from hypothesis.database import (
-    MultiplexedDatabase,
-    ReadOnlyDatabase,
     DirectoryBasedExampleDatabase,
 )
-from hypothesis.extra.redis import RedisExampleDatabase
+try:  # Redis is an optional CI cache, never a test requirement.
+    import redis
+    from hypothesis.extra.redis import RedisExampleDatabase
+except ImportError:  # pragma: no cover - exercised in minimal installations
+    redis = None
+    RedisExampleDatabase = None
 
 
 hypothesis_cache = f"{os.getcwd()}/.hypothesis/examples/"
@@ -22,30 +24,34 @@ except FileExistsError:
 
 def is_db_available(master=False, credentials=None):
     global redis_connect_dev, redis_connect_master
+    if redis is None:
+        return False
     redis_connect_local = None
     if master:
+        if not credentials:
+            return False
         redis_connect_master = redis.Redis.from_url(
             url=credentials[0], password=credentials[1]
         )
         redis_connect_local = redis_connect_master
     else:
-        redis_connect_dev = redis.Redis.from_url(
-            url="redis://redis-17011.c259.us-central1-2.gce.cloud.redislabs.com:17011",
-            username="general_use",
-            password="Hypothesiscache@123",
-            max_connections=2,
-        )
+        # Local test runs deliberately do not contact a shared service.  A
+        # developer/CI job can opt in by setting ``REDIS_URL`` explicitly.
+        return False
         redis_connect_local = redis_connect_dev
     try:
         redis_connect_local.get("b")
-    except redis.exceptions.ConnectionError:
+    except Exception:
         print("Fallback to DirectoryBasedExamples")
         return False
     return True
 
 
 def pytest_terminal_summary(terminalreporter):
-    from .test_ivy.conftest import mod_backend
+    try:
+        from .test_ivy.conftest import mod_backend
+    except ImportError:
+        return
 
     session = terminalreporter._session
 
@@ -108,29 +114,15 @@ def pytest_configure(config):
     getopt = config.getoption
     max_examples = getopt("--num-examples")
     deadline = getopt("--deadline")
-    if (
-        os.getenv("REDIS_URL", default=False)
-        and os.environ["REDIS_URL"]
-        and is_db_available(
-            master=True,
-            credentials=(os.environ["REDIS_URL"], os.environ["REDIS_PASSWD"]),
-        )
+    redis_url = os.getenv("REDIS_URL")
+    redis_password = os.getenv("REDIS_PASSWD")
+    if redis_url and redis is not None and is_db_available(
+        master=True, credentials=(redis_url, redis_password)
     ):
         print("Update Database with examples !")
         profile_settings["database"] = RedisExampleDatabase(
             redis_connect_master, key_prefix=b"hypothesis-example:"
         )
-
-    elif not os.getenv("REDIS_URL") and is_db_available():
-        print("Use Database in ReadOnly Mode with local caching !")
-        shared = RedisExampleDatabase(
-            redis_connect_dev, key_prefix=b"hypothesis-example:"
-        )
-        profile_settings["database"] = MultiplexedDatabase(
-            DirectoryBasedExampleDatabase(path=hypothesis_cache),
-            ReadOnlyDatabase(shared),
-        )
-
     else:
         print("Database unavailable, local caching only !")
         profile_settings["database"] = DirectoryBasedExampleDatabase(

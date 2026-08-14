@@ -2,7 +2,7 @@
 from typing import Optional, Union, Sequence
 import jax.numpy as jnp
 import jax
-import jaxlib.xla_extension
+from jax import Device as _JaxDevice
 
 # local
 import ivy
@@ -43,16 +43,17 @@ def beta(
     /,
     *,
     shape: Optional[Union[ivy.NativeShape, Sequence[int]]] = None,
-    device: Optional[jaxlib.xla_extension.Device] = None,
+    device: Optional[_JaxDevice] = None,
     dtype: Optional[jnp.dtype] = None,
     seed: Optional[int] = None,
     out: Optional[JaxArray] = None,
 ) -> JaxArray:
     shape = _check_bounds_and_get_shape(a, b, shape).shape
-    RNG_, rng_input = jax.random.split(_getRNG())
-    _setRNG(RNG_)
     if seed is not None:
-        jax.random.PRNGKey(seed)
+        rng_input = jax.random.PRNGKey(seed)
+    else:
+        RNG_, rng_input = jax.random.split(_getRNG())
+        _setRNG(RNG_)
     return jax.random.beta(rng_input, a, b, shape, dtype)
 
 
@@ -63,16 +64,17 @@ def gamma(
     /,
     *,
     shape: Optional[Union[ivy.NativeShape, Sequence[int]]] = None,
-    device: Optional[jaxlib.xla_extension.Device] = None,
+    device: Optional[_JaxDevice] = None,
     dtype: Optional[jnp.dtype] = None,
     seed: Optional[int] = None,
     out: Optional[JaxArray] = None,
 ) -> JaxArray:
     shape = _check_bounds_and_get_shape(alpha, beta, shape).shape
-    RNG_, rng_input = jax.random.split(_getRNG())
-    _setRNG(RNG_)
     if seed is not None:
-        jax.random.PRNGKey(seed)
+        rng_input = jax.random.PRNGKey(seed)
+    else:
+        RNG_, rng_input = jax.random.split(_getRNG())
+        _setRNG(RNG_)
     return jax.random.gamma(rng_input, alpha, shape, dtype) / beta
 
 
@@ -80,14 +82,14 @@ def poisson(
     lam: Union[float, JaxArray],
     *,
     shape: Optional[Union[ivy.NativeShape, Sequence[int]]] = None,
-    device: Optional[jaxlib.xla_extension.Device] = None,
+    device: Optional[_JaxDevice] = None,
     dtype: Optional[jnp.dtype] = None,
     seed: Optional[int] = None,
     fill_value: Optional[Union[float, int]] = 0,
     out: Optional[JaxArray] = None,
 ) -> JaxArray:
     lam = jnp.array(lam)
-    if seed:
+    if seed is not None:
         rng_input = jax.random.PRNGKey(seed)
     else:
         RNG_, rng_input = jax.random.split(_getRNG())
@@ -112,12 +114,12 @@ def bernoulli(
     *,
     logits: Optional[Union[float, JaxArray]] = None,
     shape: Optional[Union[ivy.NativeArray, Sequence[int]]] = None,
-    device: Optional[jaxlib.xla_extension.Device] = None,
+    device: Optional[_JaxDevice] = None,
     dtype: Optional[jnp.dtype] = None,
     seed: Optional[int] = None,
     out: Optional[JaxArray] = None,
 ) -> JaxArray:
-    if seed:
+    if seed is not None:
         rng_input = jax.random.PRNGKey(seed)
     else:
         RNG_, rng_input = jax.random.split(_getRNG())

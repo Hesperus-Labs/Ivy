@@ -29,8 +29,8 @@ We use the following linters:
 * `pydocstyle <https://github.com/pycqa/pydocstyle>`_
 * `ivy-lint <https://github.com/unifyai/lint-hook>`_
 
-You can also take a look at our configuration for linting in `setup.cfg <https://github.com/unifyai/ivy/blob/main/setup.cfg>`_
-file.
+The active lint configuration is in :code:`pyproject.toml`; run
+:code:`uv run ruff check ivy/transpiler tests/transpiler` before opening a PR.
 
 Setup Formatting Locally
 ------------------------

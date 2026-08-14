@@ -1,0 +1,36 @@
+:root {
+  --md-primary-fg-color: #4b3f92;
+  --md-primary-fg-color--light: #756bb1;
+  --md-primary-fg-color--dark: #30266d;
+  --md-accent-fg-color: #7557d9;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #7969c7;
+  --md-accent-fg-color: #a795ff;
+}
+
+.md-typeset .hero-copy {
+  font-size: 1.1rem;
+  max-width: 54rem;
+}
+
+.md-typeset .grid.cards > ul > li {
+  border-radius: 0.6rem;
+}
+
+.md-typeset table:not([class]) th {
+  white-space: nowrap;
+}
+
+.md-typeset .status-chip {
+  background: color-mix(in srgb, var(--md-accent-fg-color) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--md-accent-fg-color) 35%, transparent);
+  border-radius: 999px;
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  padding: 0.15rem 0.55rem;
+  text-transform: uppercase;
+}

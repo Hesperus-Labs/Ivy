@@ -3,7 +3,7 @@ from typing import Optional, Tuple
 import math
 import jax
 import jax.numpy as jnp
-import jaxlib.xla_extension
+from jax import Device as _JaxDevice
 
 # local
 from ivy.functional.backends.jax import JaxArray
@@ -72,7 +72,7 @@ def tril_indices(
     k: int = 0,
     /,
     *,
-    device: jaxlib.xla_extension.Device = None,
+    device: _JaxDevice = None,
 ) -> Tuple[JaxArray, ...]:
     return jnp.tril_indices(n=n_rows, k=k, m=n_cols)
 

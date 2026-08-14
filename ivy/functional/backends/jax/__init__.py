@@ -1,10 +1,7 @@
 # global
 import sys
-from packaging import version
-import jaxlib
 import jax
 import jax.numpy as jnp
-from typing import Union
 
 # make ivy.Container compatible with jax pytree traversal
 from jax.tree_util import register_pytree_node
@@ -44,19 +41,13 @@ else:
 
 use = ivy.utils.backend.ContextManager(_module_in_memory)
 
-if version.parse(jax.__version__) >= version.parse("0.4.1"):
-    JaxArray = jax.Array
-    NativeArray = (jax.Array,)
-else:
-    JaxArray = jaxlib.xla_extension.DeviceArray
-    NativeArray = (jaxlib.xla_extension.DeviceArray,)
-
-if version.parse(jax.__version__) <= version.parse("0.4.8"):
-    JaxArray = Union[JaxArray, jax.interpreters.xla._DeviceArray]
-    NativeArray += (jax.interpreters.xla._DeviceArray,)
+JaxArray = jax.Array
+NativeArray = (jax.Array,)
 
 # noinspection PyUnresolvedReferences,PyProtectedMember
-NativeDevice = jaxlib.xla_extension.Device
+# ``jaxlib.xla_extension`` was removed from the public JAX surface.  Keep the
+# backend on the stable public ``jax.Device`` type instead.
+NativeDevice = jax.Device
 NativeDtype = jnp.dtype
 NativeShape = tuple
 
