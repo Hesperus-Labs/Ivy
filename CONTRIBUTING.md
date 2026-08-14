@@ -10,12 +10,12 @@ and the [internal pipeline tour](https://hesperus-labs.github.io/Ivy/internals/p
 ```bash
 git clone https://github.com/Hesperus-Labs/Ivy.git
 cd Ivy
-uv sync --python 3.12
-uv run pytest tests
-uv run ruff check ivy/transpiler ivy/stateful/equinox.py ivy/cli.py tests
-uv run pyright
-uv run --group docs mkdocs build --strict
-uv run pre-commit run --all-files
+uv sync --python 3.13
+uv run --python 3.13 pytest tests
+uv run --python 3.13 ruff check ivy/transpiler ivy/stateful/equinox.py ivy/cli.py tests
+uv run --python 3.13 pyright
+uv run --python 3.13 --group docs mkdocs build --strict
+uv run --python 3.13 pre-commit run --all-files
 ```
 
 Use `uv sync --extra all-cpu` for the complete CPU framework matrix. The

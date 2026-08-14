@@ -48,9 +48,9 @@ coexist, but a source environment should use one lock resolution at a time.
 ```bash
 git clone https://github.com/Hesperus-Labs/Ivy.git
 cd Ivy
-uv sync --python 3.12
-uv run pytest tests
-uv run --group docs mkdocs build --strict
+uv sync --python 3.13
+uv run --python 3.13 pytest tests
+uv run --python 3.13 --group docs mkdocs build --strict
 ```
 
 ## Troubleshooting

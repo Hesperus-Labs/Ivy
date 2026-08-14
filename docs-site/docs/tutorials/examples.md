@@ -13,5 +13,5 @@ into a project or executed directly:
 Run a base example with:
 
 ```bash
-uv run python examples/transpile_torch_to_numpy.py
+uv run --python 3.13 python examples/transpile_torch_to_numpy.py
 ```

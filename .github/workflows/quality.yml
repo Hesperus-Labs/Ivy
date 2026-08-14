@@ -24,13 +24,13 @@ jobs:
           version: latest
           enable-cache: true
       - run: uv sync --python ${{ matrix.python-version }} --extra all-cpu
-      - run: uv run ruff check ivy/transpiler ivy/stateful/equinox.py ivy/cli.py tests
-      - run: uv run pyright
-      - run: uv run pytest tests --cov=ivy.transpiler --cov-report=term-missing
-      - run: uv run python examples/transpile_torch_to_numpy.py
-      - run: uv run python examples/transpile_tensorflow_to_numpy.py
-      - run: uv run python examples/transpile_ivy_to_numpy.py
-      - run: uv run python examples/equinox_module.py
+      - run: uv run --python ${{ matrix.python-version }} ruff check ivy/transpiler ivy/stateful/equinox.py ivy/cli.py tests
+      - run: uv run --python ${{ matrix.python-version }} pyright
+      - run: uv run --python ${{ matrix.python-version }} pytest tests --cov=ivy.transpiler --cov-report=term-missing
+      - run: uv run --python ${{ matrix.python-version }} python examples/transpile_torch_to_numpy.py
+      - run: uv run --python ${{ matrix.python-version }} python examples/transpile_tensorflow_to_numpy.py
+      - run: uv run --python ${{ matrix.python-version }} python examples/transpile_ivy_to_numpy.py
+      - run: uv run --python ${{ matrix.python-version }} python examples/equinox_module.py
       - run: uv build
 
   docs:
@@ -43,7 +43,7 @@ jobs:
           version: latest
           enable-cache: true
       - run: uv sync --python 3.12 --group docs
-      - run: uv run --group docs mkdocs build --strict
+      - run: uv run --python 3.12 --group docs mkdocs build --strict
 
   git-install:
     name: Git install smoke test

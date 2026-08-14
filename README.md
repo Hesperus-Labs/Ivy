@@ -37,9 +37,9 @@ deploying a reproducible application environment.
 For local development:
 
 ```bash
-uv sync --python 3.12
-uv run pytest tests
-uv run --group docs mkdocs serve
+uv sync --python 3.13
+uv run --python 3.13 pytest tests
+uv run --python 3.13 --group docs mkdocs serve
 ```
 
 Run `ivy doctor` after installation to inspect optional frameworks and GPU
@@ -108,8 +108,8 @@ The repository uses `pyproject.toml` and `uv.lock`. Build the complete Pages
 site locally with:
 
 ```bash
-uv sync --python 3.12
-uv run --group docs mkdocs build --strict
+uv sync --python 3.13
+uv run --python 3.13 --group docs mkdocs build --strict
 ```
 
 Every tutorial is expected to run in CI. The **Internals** section explains the

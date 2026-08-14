@@ -27,7 +27,7 @@ jobs:
           version: latest
           enable-cache: true
       - run: uv sync --python 3.12 --group docs
-      - run: uv run --group docs mkdocs build --strict
+      - run: uv run --python 3.12 --group docs mkdocs build --strict
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

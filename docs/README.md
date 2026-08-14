@@ -10,8 +10,8 @@ and internals documentation belong in [`docs-site/docs/`](../docs-site/docs/).
 Build them locally with:
 
 ```bash
-uv sync --python 3.12 --group docs
-uv run --group docs mkdocs build --strict
+uv sync --python 3.13 --group docs
+uv run --python 3.13 --group docs mkdocs build --strict
 ```
 
 The remaining RST files under this directory are a historical upstream Ivy

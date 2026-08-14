@@ -83,8 +83,8 @@ Add the lowering in `ivy/transpiler/registry.py` and `runtime.py`, then add a
 cross-framework test and rebuild the strict Pages site:
 
 ```bash
-uv run pytest tests -q
-uv run --group docs mkdocs build --strict
+uv run --python 3.13 pytest tests -q
+uv run --python 3.13 --group docs mkdocs build --strict
 ```
 
 The [pipeline internals](../internals/pipeline.md) page contains the compact

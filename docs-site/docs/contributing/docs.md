@@ -7,9 +7,9 @@ example, and any relevant internals explanation are present.
 ## Local build
 
 ```bash
-uv sync --python 3.12
-uv run --group docs mkdocs build --strict
-uv run --group docs mkdocs serve
+uv sync --python 3.13
+uv run --python 3.13 --group docs mkdocs build --strict
+uv run --python 3.13 --group docs mkdocs serve
 ```
 
 The Pages workflow builds the site from `main` and from release tags. Pull

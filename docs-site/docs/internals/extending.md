@@ -9,7 +9,7 @@ Use this workflow for a new documented primitive:
 4. Add a source-defined function to `tests/transpiler/test_api.py` or a focused
    test module.
 5. Add one user-facing tutorial or API note when the behavior is non-obvious.
-6. Run `uv run pytest tests` and `uv run --group docs mkdocs build --strict`.
+6. Run `uv run --python 3.13 pytest tests` and `uv run --python 3.13 --group docs mkdocs build --strict`.
 
 The registry is not a substitute for tests: a listed primitive is incomplete
 until its target behavior and edge cases are covered. Keep conversions explicit
