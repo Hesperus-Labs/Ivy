@@ -14,6 +14,33 @@
 The project lockfile is the reproducible development environment. Published
 Git installs resolve the selected extra using normal package metadata.
 
+!!! note "Distribution and import names"
+    Install `hesperus-ivy`, then write `import ivy`. The distribution name is
+    distinct so it does not pretend to be an upstream Ivy release.
+
+## Choose an extra
+
+| Extra | Installs | Best for |
+| --- | --- | --- |
+| none | Hesperus Ivy + NumPy core dependencies | NumPy/reference execution |
+| `jax` | JAX, Equinox, Optax | Recommended JAX/Equinox development |
+| `torch` | PyTorch | PyTorch-only target applications |
+| `tensorflow` | TensorFlow | TensorFlow-only target applications |
+| `all-cpu` | All maintained CPU frameworks | Conversion development and CI |
+| `nvidia` | CUDA 13 JAX/Torch plus TensorFlow CUDA | Linux NVIDIA workstation |
+
+`all-cpu` and `nvidia` intentionally conflict. Use separate environments.
+
+## JAX/Equinox-only installation
+
+```bash
+uv venv --python 3.13
+source .venv/bin/activate
+uv pip install \
+  "hesperus-ivy[jax] @ git+https://github.com/Hesperus-Labs/Ivy.git@main"
+python -c "import ivy, jax, equinox; print(ivy.__version__, jax.devices())"
+```
+
 ## CPU/reference installation
 
 ```bash
@@ -25,6 +52,9 @@ uv pip install --torch-backend=cpu \
 
 `@main` tracks the maintained fork. Once a release tag is available, pin the
 same URL to that tag for reproducible application deployments.
+
+For a reproducible application, replace `main` with a reviewed commit SHA and
+commit the consuming application's `uv.lock`.
 
 ## NVIDIA installation
 
@@ -43,6 +73,26 @@ JAX random operations use explicit keys, and TensorFlow’s CUDA dependencies
 are installed through its `and-cuda` extra. The two accelerator stacks can
 coexist, but a source environment should use one lock resolution at a time.
 
+The NVIDIA profile is tailored to the Hesperus development workstation (Linux
+x86_64, RTX 4060, CUDA 13-capable driver). Run diagnostics immediately; it is
+not blanket certification of every driver/GPU combination.
+
+## Verify the installation
+
+```bash
+ivy doctor
+ivy coverage --source torch --target equinox
+python - <<'PY'
+import ivy
+print(ivy.__version__)
+print(ivy.cache_info())
+print(ivy.compatibility_report()["registry_revision"])
+PY
+```
+
+Missing optional frameworks are reported as `not-installed`; initialization
+failures are captured in diagnostic strings.
+
 ## Local development
 
 ```bash
@@ -53,6 +103,21 @@ uv run --python 3.13 pytest tests
 uv run --python 3.13 --group docs mkdocs build --strict
 ```
 
+Use `--extra all-cpu --group docs` for the complete developer environment.
+`uv sync` installs the local project; a legacy `setup.py develop` step is not
+needed. Use explicit `--python` on `uv run` for interpreter-specific checks.
+
+## Upgrade or uninstall
+
+```bash
+uv pip install --upgrade \
+  "hesperus-ivy[jax] @ git+https://github.com/Hesperus-Labs/Ivy.git@main"
+uv pip uninstall hesperus-ivy
+```
+
+The user source cache is separate. Inspect and clear it with `ivy cache-info`
+and `ivy cache-clear` if desired.
+
 ## Troubleshooting
 
 1. Run `ivy doctor` and save its JSON output to an issue.
@@ -61,3 +126,6 @@ uv run --python 3.13 --group docs mkdocs build --strict
 4. For JAX, verify the installed driver meets the CUDA backend’s requirement.
 5. If a conversion fails, attach `TranspileReport.to_json()` and the generated
    source directory, not a private model checkpoint.
+
+See [troubleshooting](guide/troubleshooting.md) for dtype, inspection, tracer,
+checkpoint, and accelerator failures.

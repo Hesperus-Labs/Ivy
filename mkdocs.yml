@@ -10,12 +10,16 @@ strict: true
 theme:
   name: material
   language: en
+  custom_dir: docs-site/overrides
   features:
     - navigation.tabs
     - navigation.sections
+    - navigation.indexes
     - navigation.top
+    - navigation.footer
     - content.code.copy
     - content.action.edit
+    - content.tooltips
     - search.suggest
     - search.highlight
   palette:
@@ -57,6 +61,9 @@ markdown_extensions:
   - pymdownx.tasklist
   - tables
 
+extra_css:
+  - stylesheets/extra.css
+
 extra:
   version:
     provider: mike
@@ -64,29 +71,56 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/Hesperus-Labs/Ivy
 
+copyright: Copyright &copy; 2026 Hesperus Labs · Apache-2.0
+
 nav:
   - Home: index.md
   - Project status: status.md
   - Getting started:
       - Install: install.md
       - Five-minute quickstart: tutorials/quickstart.md
+      - Choose a workflow: guide/choosing-a-workflow.md
       - Framework matrix: compatibility.md
+      - Troubleshooting: guide/troubleshooting.md
   - Tutorials:
       - Transpile a function: tutorials/transpiling.md
       - Equinox modules and state: tutorials/equinox.md
+      - Migrate a PyTorch module: tutorials/pytorch-to-equinox.md
+      - Verify numerical parity: tutorials/parity.md
       - Examples: tutorials/examples.md
       - Internal tutorial: tutorials/internals.md
+  - User guide:
+      - Source requirements: guide/source-requirements.md
+      - Reports and generated code: guide/reports-and-emission.md
+      - Caching and compilation: guide/cache-and-compilation.md
+      - Randomness and state: guide/randomness-and-state.md
+      - Modules and parameters: guide/modules.md
+      - Production deployment: guide/deployment.md
+  - Frameworks:
+      - PyTorch: frameworks/pytorch.md
+      - TensorFlow: frameworks/tensorflow.md
+      - JAX and Equinox: frameworks/jax-equinox.md
+      - NumPy and Ivy: frameworks/numpy-ivy.md
   - Internals:
       - Pipeline tour: internals/pipeline.md
+      - AST lowering: internals/ast-lowering.md
+      - Runtime dispatch: internals/runtime.md
       - Primitive registry: internals/registry.md
+      - Cache format: internals/cache.md
       - Add a lowering: internals/extending.md
+      - Testing strategy: internals/testing.md
   - Migration:
       - From upstream Ivy: migration/upstream.md
       - From Flax/Haiku to Equinox: migration/equinox.md
   - API reference:
       - Core library: reference/library.md
       - Transpiler: reference/transpiler.md
+      - Transpiler options: reference/transpile-options.md
+      - Primitive catalog: reference/primitives.md
+      - Reports and errors: reference/reports-errors.md
       - Equinox bridges: reference/equinox.md
+      - Command line: reference/cli.md
       - Diagnostics: reference/diagnostics.md
   - Contributors:
       - Documentation workflow: contributing/docs.md
+      - Development and releases: contributing/development.md
